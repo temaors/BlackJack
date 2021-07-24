@@ -1,4 +1,5 @@
 using System;
+using System.Net.NetworkInformation;
 using System.Threading;
 
 namespace BlackJack
@@ -22,16 +23,36 @@ namespace BlackJack
         //
         //Сделать WPF приложение игры
         
-        private int[] _deck = new int[36] { 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11 };
+        private string[,] _deck = new string[2,52] { 
+            {"two of clubs","two of spades", "two of diamonds","two of hearts",
+                "three of clubs","three of spades","three of diamonds","three of hearts",
+                "four of clubs","four of spades","four of diamonds","four of hearts",
+                "five of clubs","five of spades","five of diamonds","five of hearts",
+                "six of clubs","six of spades","six of diamonds","six of hearts",
+                "seven of clubs","seven of spades","seven of diamonds","seven of hearts",
+                "eight of clubs","eight of spades","eight of diamonds","eight of hearts",
+                "nine of clubs","nine of spades","nine of diamonds","nine of hearts",
+                "ten of clubs","ten of spades","ten of diamonds","ten of hearts",
+                "jack of clubs","jack of spades","jack of diamonds","jack of hearts",
+                "queen of clubs","queen of spades","queen of diamonds","queen of hearts",
+                "king of clubs","king of spades","king of diamonds","king of hearts",
+                "ace of clubs","ace of spades","ace of diamonds","ace of hearts",},
+            {"2", "2", "2", "2", "3", "3", "3", "3", "4", "4", "4",
+                "4","5", "5","5","5","6", "6", "6", "6", "7", "7",
+                "7", "7", "8", "8", "8", "8", "9", "9", "9", "9",
+                "10",  "10", "10", "10","10", "10", "10","10", "10",
+                "10","10", "10", "10","10", "10", "10", "11", "11", "11", "11"} };
         public Game()
-        {
+        {   
             Player player = new Player();
             Computer computer = new Computer();
-            
-            StartGame(player, computer);
+            StartGame(computer, player);
         }
-        public void StartGame(Player player, Computer computer)
-        { 
+        public void StartGame(Computer computer, Player player)
+        {
+            string[] c = new string[1] {"Empty"};
+            Cards playerHand = new Cards(c);
+            Cards computerHand = new Cards(c);
             Console.WriteLine("Добро пожаловать в игру BlackJack v1.0");
             Console.WriteLine("Введите ваше имя:");
             player.Name = Console.ReadLine();
@@ -42,7 +63,7 @@ namespace BlackJack
                 Console.Clear();
                 if (player.Status)
                 {
-                    PrintScore(player);
+                    PrintScore(player, playerHand);
                     Console.WriteLine("Ваш ход:");
                     Console.WriteLine("UpArrow - Скипнуть ход");
                     Console.WriteLine("DownArrow - Взять карту");
@@ -56,7 +77,7 @@ namespace BlackJack
                     switch (key.Key)
                     {
                         case ConsoleKey.DownArrow:
-                            player.Score += GetCard();
+                            player.Score += GetCard(playerHand);
                             break;
                         case ConsoleKey.UpArrow:
                             player.Status = false;
@@ -77,17 +98,17 @@ namespace BlackJack
                     Thread.Sleep(5000);
                     if (computer.Score < 15)
                     {
-                        computer.Score += GetCard();
+                        computer.Score += GetCard(computerHand);
                     }
                     else
                     {
-                        computer.Status = false;
+                        computer.Status = false; 
                     }
                 }
             }
             Console.Clear();
-            PrintScore(player);
-            PrintScore(computer);
+            PrintScore(player, playerHand);
+            PrintScore(computer, computerHand);
             CheckWinner(player, computer);
         }
 
@@ -150,33 +171,48 @@ namespace BlackJack
             Console.Clear();
         }
 
-        public int GetCard()
+        public int GetCard(Cards unitHand)
         {
             Random randcard = new Random();
-            int x = randcard.Next(0, _deck.Length);
-            int card = _deck[x];
+            int x = randcard.Next(0, _deck.GetLength(1));
+            int card = Convert.ToInt32(_deck[1, x]);
+            unitHand.Hand[unitHand.AmountOfCards] = _deck[0, x];
+            unitHand.AmountOfCards++;
             ChangeDeck(x);
             return card;
         }
 
         public void ChangeDeck(int x)
         {
-            int[] buffDeck = new int[_deck.Length-1];
-            for (int i = 0; i < x; i++)
+            string[,] buffDeck = new string[2,_deck.GetLength(1)-1];
+            for (int j = 0; j < 2; j++)
             {
-                buffDeck[i] = _deck[i];
+                for (int i = 0; i < x; i++)
+                {
+                    buffDeck[j, i] = _deck[j, i];
+                }
             }
 
-            for (int i = x+1; i < _deck.Length; i++)
+            for (int j = 0; j < 2; j++)
             {
-                buffDeck[i-1] = _deck[i];
+                for (int i = x + 1; i < _deck.GetLength(1); i++)
+                {
+                    buffDeck[j, i - 1] = _deck[j, i];  
+                }
             }
 
             _deck = buffDeck;
         }
 
-        public void PrintScore(Unit unit)
+        public void PrintScore(Unit unit, Cards unitHand)
         {
+            Console.WriteLine($"Карты игрока {unit.Name}:");
+            for (int i = 0; i < unitHand.AmountOfCards; i++)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(unitHand.Hand[i]);
+            }
+            Console.ResetColor();
             Console.Write("Количество очков игрока ");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"{unit.Name}: {unit.Score}");
