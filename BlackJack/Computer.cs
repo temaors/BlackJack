@@ -5,9 +5,6 @@ namespace BlackJack
         public Computer()
         {
             Name = "КАМПУДАХТАР";
-            Score = 0;
-            Status = true;
-            GlobalScore = 0;
         }
     }
 }

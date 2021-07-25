@@ -23,7 +23,7 @@ namespace BlackJack
         //
         //Сделать WPF приложение игры
         
-        private string[,] _deck = new string[2,52] { 
+        public string[,] _deck = new string[2,52] { 
             {"two of clubs","two of spades", "two of diamonds","two of hearts",
                 "three of clubs","three of spades","three of diamonds","three of hearts",
                 "four of clubs","four of spades","four of diamonds","four of hearts",
@@ -50,9 +50,6 @@ namespace BlackJack
         }
         public void StartGame(Computer computer, Player player)
         {
-            string[] c = new string[1] {"Empty"};
-            Cards playerHand = new Cards(c);
-            Cards computerHand = new Cards(c);
             Console.WriteLine("Добро пожаловать в игру BlackJack v1.0");
             Console.WriteLine("Введите ваше имя:");
             player.Name = Console.ReadLine();
@@ -63,11 +60,11 @@ namespace BlackJack
                 Console.Clear();
                 if (player.Status)
                 {
-                    PrintScore(player, playerHand);
                     Console.WriteLine("Ваш ход:");
                     Console.WriteLine("UpArrow - Скипнуть ход");
                     Console.WriteLine("DownArrow - Взять карту");
                     Console.WriteLine("Escape - Выйти из игры");
+                    player.PrintScore();
                     var key = Console.ReadKey();
                     while (key.Key != ConsoleKey.UpArrow && key.Key != ConsoleKey.DownArrow && key.Key != ConsoleKey.Escape)
                     {
@@ -77,8 +74,7 @@ namespace BlackJack
                     switch (key.Key)
                     {
                         case ConsoleKey.DownArrow:
-                            player.Score += GetCard(playerHand);
-                            player.AmountOfCards++;
+                            ChangeDeck(player.GetCard(_deck));
                             break;
                         case ConsoleKey.UpArrow:
                             player.Status = false;
@@ -99,8 +95,7 @@ namespace BlackJack
                     Thread.Sleep(5000);
                     if (computer.Score < 15)
                     {
-                        computer.Score += GetCard(computerHand);
-                        computer.AmountOfCards++;
+                        ChangeDeck(computer.GetCard(_deck));
                     }
                     else
                     {
@@ -109,11 +104,36 @@ namespace BlackJack
                 }
             }
             Console.Clear();
-            PrintScore(player, playerHand);
-            PrintScore(computer, computerHand);
             CheckWinner(player, computer);
+            PrintFinalScore(computer, player);
         }
 
+        public void PrintFinalScore(Computer computer, Player player)
+        {
+            Console.WriteLine($"Карты игрока {player.Name}:");
+            for (int i = 0; i <= player.AmountOfCards; i++)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(player.Hand[i]);
+            }
+            Console.ResetColor();
+            Console.Write("Количество очков игрока: ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(player.Score);
+            Console.ResetColor();
+
+            Console.WriteLine($"Карты игрока {computer.Name}:");
+            for (int i = 0; i <= computer.AmountOfCards; i++)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(computer.Hand[i]);
+            }
+            Console.ResetColor();
+            Console.Write("Количество очков игрока: ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(computer.Score);
+            Console.ResetColor();
+        }
         public void CheckWinner(Unit player, Unit computer)
         {
             if (computer.Score == player.Score||(player.Score>21 && computer.Score>21))
@@ -173,17 +193,6 @@ namespace BlackJack
             Console.Clear();
         }
 
-        public int GetCard(Cards unitHand)
-        {
-            Random randcard = new Random();
-            int x = randcard.Next(0, _deck.GetLength(1));
-            int card = Convert.ToInt32(_deck[1, x]);
-            unitHand.Hand[unitHand.AmountOfCards] = _deck[0, x];
-            unitHand.AmountOfCards++;
-            ChangeDeck(x);
-            return card;
-        }
-
         public void ChangeDeck(int x)
         {
             string[,] buffDeck = new string[2,_deck.GetLength(1)-1];
@@ -204,21 +213,6 @@ namespace BlackJack
             }
 
             _deck = buffDeck;
-        }
-
-        public void PrintScore(Unit unit, Cards unitHand)
-        {
-            Console.WriteLine($"Карты игрока {unit.Name}:");
-            for (int i = 0; i <= unitHand.AmountOfCards; i++)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(unitHand.Hand[i]);
-            }
-            Console.ResetColor();
-            Console.Write("Количество очков игрока ");
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"{unit.Name}: {unit.Score}");
-            Console.ResetColor();
         }
     }
 }
