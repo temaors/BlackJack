@@ -43,9 +43,10 @@ namespace BlackJack
                 "10",  "10", "10", "10","10", "10", "10","10", "10",
                 "10","10", "10", "10","10", "10", "10", "11", "11", "11", "11"} };
         public Game()
-        {   
-            Player player = new Player();
-            Computer computer = new Computer();
+        {
+            string[] Buff = new string[1] { "Empty" };
+            Player player = new Player() { Hand = Buff };
+            Computer computer = new Computer() { Hand = Buff };
             StartGame(computer, player);
         }
         public void StartGame(Computer computer, Player player)

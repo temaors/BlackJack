@@ -15,6 +15,10 @@ namespace BlackJack
             Console.ForegroundColor = ConsoleColor.DarkRed;
             foreach (string card in Hand)
             {
+                if (card == null)
+                {
+                    break;
+                }
                 Console.WriteLine(card);
             }
             Console.ResetColor();
