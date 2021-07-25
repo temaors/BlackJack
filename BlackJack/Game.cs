@@ -78,6 +78,7 @@ namespace BlackJack
                     {
                         case ConsoleKey.DownArrow:
                             player.Score += GetCard(playerHand);
+                            player.AmountOfCards++;
                             break;
                         case ConsoleKey.UpArrow:
                             player.Status = false;
@@ -99,6 +100,7 @@ namespace BlackJack
                     if (computer.Score < 15)
                     {
                         computer.Score += GetCard(computerHand);
+                        computer.AmountOfCards++;
                     }
                     else
                     {
@@ -207,7 +209,7 @@ namespace BlackJack
         public void PrintScore(Unit unit, Cards unitHand)
         {
             Console.WriteLine($"Карты игрока {unit.Name}:");
-            for (int i = 0; i < unitHand.AmountOfCards; i++)
+            for (int i = 0; i <= unitHand.AmountOfCards; i++)
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine(unitHand.Hand[i]);

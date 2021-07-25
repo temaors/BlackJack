@@ -10,6 +10,7 @@ namespace BlackJack
         public int Score;
         public string Name;
         public bool Status;
-        public int GlobalScore;
+        public int AmountOfCards { get; set; }
+        public int GlobalScore { get; set; }
     }
 }

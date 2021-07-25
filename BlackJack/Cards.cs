@@ -1,6 +1,6 @@
 namespace BlackJack
 {
-    public class Cards
+    public struct Cards
     {
         public Cards(string[] c)
         {
@@ -8,9 +8,7 @@ namespace BlackJack
             AmountOfCards = 0;
         }
 
-        public string[] Hand;
-        public int AmountOfCards;
-        
-        
+        public string[] Hand { get; set; }
+        public int AmountOfCards { get; set; } 
     }
 }
