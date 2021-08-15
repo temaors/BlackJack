@@ -17,7 +17,7 @@ namespace BlackJack
         //
         //Связать с базами данных
         //Сделать несколько игр и объединить в хаб развлечений (Hunt the Wumpus)
-        //Игра динозаврика из браузера
+        //Игра динозаврика из браузера 
         //
         //
         //
@@ -93,7 +93,7 @@ namespace BlackJack
                 {
                     Console.WriteLine("Ход компьютера...");
 
-                    Thread.Sleep(5000);
+                    Thread.Sleep(3500);
                     if (computer.Score < 15)
                     {
                         ChangeDeck(computer.GetCard(_deck));
